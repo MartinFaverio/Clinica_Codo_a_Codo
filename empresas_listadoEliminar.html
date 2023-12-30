@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica CodoaCodo</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos_crud.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+            <input type="checkbox" id="check">
+            <label for="check" class="mostrar-menu">&#8801</label>
+            <nav class="menu">
+                <a href="empresas_crud_index .html">Inicio CRUD</a>
+                <label for="check" class="esconder-menu">
+                    &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+                </label>
+            </nav>
+        </header>
+
+        <main class="content">
+            <a id="arriba"></a>
+            <h2 class="titulo"><b><u>CRUD empresas Clinica Codo a Codo</u></b></h2>
+            <h2 class="titulo">Baja de empresas del listado maestro</h2>
+            <br>
+
+            <table width="100%"> <!-- Se crea una tabla para mostrar los productos. -->
+                <thead>
+                    <!--Encabezado de la tabla con columnas para código, descripción, cantidad, precio y acciones.-->
+                    <tr>
+                        <th align="center">Codigo.</th>
+                        <th align="center">Nombre</th>
+                        <th align="center">Rubro</th>
+                        <th align="center">direccion</th>
+                        <th align="center">Mail de contacto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se utiliza la directiva v-for de Vue.js para iterar sobre el array de productos (productos) y crear una fila por cada producto. -->
+                    <tr v-for="empresa in empresas">
+                        <td align="center">{{ empresa.codigo }}</td>
+                        <td align="center">{{ empresa.nombre }}</td>
+                        <td align="center">{{ empresa.rubro }}</td>
+                        <td align="center">{{ empresa.direccion }}</td>
+                        <td align="center">{{ empresa.mail }}</td>
+                        <!-- Se agrega un botón dentro de cada fila que, cuando se hace clic, activa la función eliminarProducto de Vue.js, pasando como argumento el código del producto. -->
+                        <td align="center"><button class="boton" @click="eliminarEmpresa(empresa.codigo)">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="contenedor-centrado">
+                <a class="xx" href="#arriba">Volver al inicio</a>
+            </div>
+
+        </main>
+
+        <footer class="footer">
+            <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+            <a href="empresas_crud_index .html">Inicio CRUD</a>
+        </footer>
+
+
+        <script src="https://unpkg.com/vue@next"></script>
+        <script>
+            const URL = "http://127.0.0.1:5000/"
+
+            //Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+            //const URL = "https://USUARIO.pythonanywhere.com/"
+
+
+            //Vue.createApp para crear nuestra aplicación Vue.
+            //Define una propiedad productos en el estado de la aplicación Vue. Inicialmente, es un array vacío que almacenará los datos de los productos obtenidos del servidor.
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        empresas: []
+                    }
+                },
+                methods: {
+                    // El método obtenerEmpresas se utiliza para obtener las empresas del servidor. 
+                    obtenerEmpresas() {
+                        // Obtenemos el contenido del listado
+                        fetch(URL + 'empresas') //Realiza una solicitud GET al servidor y obtener la lista de empresas.
+                            .then(response => {
+                                // Si es exitosa (response.ok), convierte los datos de la respuesta de formato JSON a un objeto JavaScript.
+                                if (response.ok) { return response.json(); }
+                            })
+
+                            //Asigna los datos de las empresas obtenidas a la propiedad empresas del estado de Vue.
+                            .then(data => {
+                                // El código Vue itera este elemento para generar la tabla
+                                this.empresas = data;
+                            })
+
+                            //Captura y maneja errores, mostrando una alerta en caso de error al obtener los productos.
+                            .catch(error => {
+                                console.log('Error:', error);
+                                alert('Error al obtener los productos.');
+                            });
+                    },
+
+                    //Se utiliza para eliminar una empresa.
+                    eliminarEmpresa(codigo) {
+                        //Se muestra un diálogo de confirmación. Si el usuario confirma, se realiza una solicitud DELETE al servidor a través de fetch(URL + 'productos/${codigo}', {method: 'DELETE' }).
+                        if (confirm('¿Estás seguro de que quieres eliminar esta empresa?')) {
+                            fetch(URL + `empresas/${codigo}`, { method: 'DELETE' })
+                                .then(response => {
+                                    if (response.ok) {
+                                        // Si es exitosa (response.ok), elimina el producto y da mensaje de ok.
+                                        this.empresas = this.empresas.filter(empresa => empresa.codigo !== codigo);
+                                        alert('Empresa ELIMINADA CORRECTAMENTE!!');
+                                    }
+                                })
+
+                                // En caso de error, mostramos una alerta con un mensaje de error.
+                                .catch(error => {
+                                    alert(error.message);
+                                });
+                        }
+                    }
+                },
+
+                //Una vez iniciada la app de Vue, se carga el método mounted()
+                mounted() {
+                    //Se llama al método obtenerProductos para cargar la lista de productos cuando la página se carga por primera vez.
+                    this.obtenerEmpresas();
+                }
+            });
+
+            //Monta la aplicación Vue en el elemento <body> del DOM. Esto activa Vue en la página, haciendo que sea reactivo y maneje el contenido dinámicamente según los datos y las interacciones del usuario.
+            app.mount('body');
+        </script>
+</body>
+
+</html>

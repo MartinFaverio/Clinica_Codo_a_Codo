@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinica CodoaCodo</title>
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/estilo_index.css">
+  <!-- Javascript -->
+  <script src="JS/script_form.js"></script>
+  <script src="JS/api.js"></script>
+
+</head>
+
+<a id="arriba"></a>
+
+<body>
+  <div class="container">
+    <header class="header">     
+      <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+      <input type="checkbox" id="check">
+      <label for="check" class="mostrar-menu">&#8801</label>
+      <nav class="menu">
+        <a href="la_clinica.html">La Clinica</a>
+        <a href="servicios.html">Servicios Médicos</a>
+        <a href="afiliados_log.html">Turnos</a>
+        <label for="check" class="esconder-menu">
+          &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+        </label>
+      </nav>
+    </header>
+
+    <main class="content">
+      <div class="embed-container">
+        <iframe src="https://www.youtube.com/embed/WheDj5cIakE" frameborder="0" allowfullscreen></iframe>
+      </div>
+
+      <div class="izquierda">
+        <!--  Etiquetas y muestra datos de la API -->
+        <div class="api">
+          <br>
+          <h1><u>CLIMA EN LA CIUDAD</u></h1>
+          <i class="fa-solid fa-earth-americas"></i> <span id="timezone"></span> <br>
+          <strong> <i style="color: azure; text-decoration: underline; font-size:20px;"
+              class="fa-solid fa-calendar-days"> FECHA:</i></strong> <span id="current.time"></span> <br>
+          <strong> <i style="color: azure; text-decoration: underline; font-size:20px;"
+              class="fa-solid fa-temperature-three-quarters">TEMP ACTUAL:</i> </strong> <span
+            id="current.temperature_2m"></span>
+          <span id="current_units.temperature_2m"></span> <br>
+          <strong> <i style="color: azure; text-decoration: underline; font-size:20px;" class="fa-solid fa-wind">VEL DEL
+              VIENTO:</i></strong> <span id="current.windspeed_10m"></span>
+          <span id="current_units.windspeed_10m"></span> <br>
+          <strong> <i style="color: azure; text-decoration: underline; font-size:20px;"
+              class="fa-solid fa-compass">DIRECCION DEL VIENTO:</i></strong> <span
+            id="current.winddirection_10m"></span>
+          <span id="current_units.winddirection_10m"></span> <br>
+          <strong> <i style="color: azure; text-decoration: underline; font-size:20px;"
+              class="fa-solid fa-water">HUMEDAD:</i></strong> <span id="current.relativehumidity_2m"></span>
+          <span id="current_units.relativehumidity_2m"></span> <br>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <div>
+        <img src="img/index01.jpg" alt="">
+        <p>Las mejores herramientas a disposición de los mejores médicos.</p>
+      </div>
+      <div>
+        <img src="img/index03.jpg" alt="">
+        <p>Radioterapia cuenta con equipos de última tecnología.</p>
+      </div>
+    </aside>
+
+    <div class="related-post">
+      <div class="post"><a href="servicios.html?esp_sel=cardiologia"><img src="./img/Cuadrado Cardiologia.png"
+            alt="cardio" class="img"></a></div>
+    </div>
+    <div class="related-post">
+      <div class="post"><a href="servicios.html?esp_sel=radioterapia"><img src="./img/Cuadrado Radioterapia.png"
+            alt="Radioterapia" class="img"></a></div>
+    </div>
+    <div class="related-post">
+      <div class="post"><a href="servicios.html?esp_sel=traumatologia"><img src="./img/Cuadrado Traumatología.png"
+            alt="Traumatologia" class="img"></a></div>
+    </div>
+    <div class="related-post">
+      <div class="post"> <a href="servicios.html?esp_sel=odontologia"><img src="./img/Cuadrado Odontología.png"
+            alt="Odontología" class="img"></a></div>
+    </div>
+    <div class="related-post">
+      <div class="post"><a href="servicios.html?esp_sel=oftalmologia"><img src="./img/Cuadrado Oftalmología.png"
+            alt="Oftalmologia" class="img"></a></div>
+    </div>
+
+    <section id="contacto">
+      <h4>Contacta con nosotros</h4>
+      <form id="formulario" enctype="multipart/form-data" onsubmit='return validar()'>
+        <div class="datos-form">
+          <div class="nombre">
+            <label for="nombre">Nombre y Apellido</label>
+            <input type="text" name="nombre" id="nombre" onblur='validarNombre()' placeholder="Nombre">
+          </div>
+          <div class="email">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" onblur='validarEmail()' placeholder="E-mail">
+          </div>
+        </div>
+        <div class="mensaje">
+          <label for="mensaje">
+            <textarea name="mensaje" id="mensaje" cols="30" rows="10" placeholder="Mensaje"
+              onblur='validarConsulta()'></textarea>
+          </label>
+        </div>
+        <div class="boton-formulario">
+          <a class="boton-saber-mas"><button type="submit" class="boton_interior">ENVIAR MENSAJE</button></a>
+        </div>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+        <a href="#arriba">Inicio</a>
+        <a href="usuarios_log.html">Solo empleados</a>
+    </footer>
+
+  </div>
+
+  <script> //Este SCRIPT toma los datos de la carga realizada y los manda a la BBDD tabla USUARIOS
+    const URL = "http://127.0.0.1:5000/"
+    //const URL = "https://SakkarArg.pythonanywhere.com/"
+
+    //Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+    //const URL = "https://USUARIO.pythonanywhere.com/"
+
+    // Capturamos el evento de envío del formulario
+    document.getElementById('formulario').addEventListener('submit', function (event) {
+      event.preventDefault(); // Evitamos que se envie el form 
+
+      var formData = new FormData();
+      formData.append('nombre', document.getElementById('nombre').value);
+      formData.append('mail', document.getElementById('email').value);
+      formData.append('mensaje', document.getElementById('mensaje').value);
+
+
+      // Realizamos la solicitud POST al servidor. El método POST se usa para enviar y crear nuevos datos en el servidor.
+      fetch(URL + 'mensajes', {
+        method: 'POST',
+        body: formData // Aquí enviamos formData. Dado que formData puede contener archivos, no se utiliza JSON.
+      })
+
+        //Después de realizar la solicitud POST, se utiliza el método then() para manejar la respuesta del servidor.
+        .then(function (response) {
+          if (response.ok) {
+
+            //Si la respuesta es exitosa, convierte los datos de la respuesta a formato JSON.
+            return response.json();
+          } else {
+            // Si hubo un error, lanzar explícitamente una excepción
+            // para ser "catcheada" más adelante
+            throw new Error('ERROR #02 - Convertir los datos del nuevo mensaje a json -');
+          }
+        })
+
+        //Respuesta OK, muestra una alerta informando que el producto se agregó correctamente y limpia los campos del formulario para que puedan ser utilizados para un nuevo producto.
+        .then(function (data) {
+          alert('Mensaje AGREGADO CORRECTAMENTE!!');
+        })
+
+        // En caso de error, mostramos una alerta con un mensaje de error.
+        .catch(function (error) {
+          alert('ERROR #03 - Agregar el json a la BBDD -');
+        })
+
+        // Limpiar el formulario en ambos casos (éxito o error)
+        .finally(function () {
+          document.getElementById('nombre').value = "";
+          document.getElementById('email').value = "";
+          document.getElementById('mensaje').value = "";
+        });
+    })
+  </script>
+
+</body>
+
+</html>

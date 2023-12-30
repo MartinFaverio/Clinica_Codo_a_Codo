@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica CodoaCodo</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos_crud.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+            <input type="checkbox" id="check">
+            <label for="check" class="mostrar-menu">&#8801</label>
+            <nav class="menu">
+                <a href="empresas_crud_index .html">Inicio CRUD</a>
+                <a href="empresas_listado.html"><button class="boton">Volver listado</button></a>
+                <label for="check" class="esconder-menu">
+                    &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+                </label>
+            </nav>
+        </header>
+
+        <main class="content">
+            <h2 class="titulo"><b><u>CRUD empresas Clinica Codo a Codo</u></b></h2>
+            <h2 class="titulo">Modificar empresas del listado general</h2>
+            <br>
+
+            <!-- Contenedor principal que será controlado por Vue.js. Este contenedor tendrá dos formularios. -->
+            <div id="app">
+                <!-- Primer formulario: Selector de empresa. LLama a la función obtenerEmpresa cuando se envíe el formulario -->
+                <form @submit.prevent="obtenerEmpresa">
+                    <label for="codigo">Codigo:</label>
+                    <input type="text" v-model="codigo" required><br>
+                    <button class="boton_verde" type="submit">Modificar empresa</button>
+                    <button class="boton_rojo"><a class="xx" href="empresas_crud_index .html">Cancelar</a></button>
+                </form>
+
+                <!-- Segundo formulario: se muestra solo si mostrarDatosEmpresa es verdadero. Llama a la función guardarCambios -->
+                <div v-if="mostrarDatosEmpresa">
+                    <h2>Datos de la empresa</h2>
+                    <form @submit.prevent="guardarCambios">
+                        <label for="nombreModificar">Nombre:</label>
+                        <input type="text" id="nombreModificar" v-model="nombre" required><br>
+
+                        <label for="rubroModificar">Rubro:</label>
+                        <input type="text" id="rubroModificar" v-model="rubro" required><br>
+
+                        <label for="direccionModificar">Direccion:</label>
+                        <input type="text" id="direccionModificar" v-model="direccion" required><br>
+
+                        <label for="mailModificar">Mail:</label>
+                        <input type="text" step="0.01" id="mailModificar" v-model="mail" required><br>
+
+                        <button class="boton_verde" type="submit">Guardar Cambios</button>
+                        <button class="boton_rojo"><a class="xx" href="empresas_modificaciones.html">Cancelar</a></button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+            <a href="empresas_crud_index .html">Inicio CRUD</a>
+        </footer>
+
+    </div>
+
+
+
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const URL = "http://127.0.0.1:5000/"
+
+        //Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+        //const URL = "https://USUARIO.pythonanywhere.com/"
+
+
+        //Vue.createApp para crear nuestra aplicación Vue.
+        const app = Vue.createApp({
+
+            //La función data devuelve un objeto que contiene las siguientes propiedades: 
+            data() {
+                return {
+                    codigo: '',
+                    nombre: '',
+                    rubro: '',
+                    direccion: '',
+                    mail: '',
+                    mostrarDatosEmpresa: false, //mostrarDatosEnpresa para controlar la visibilidad del formulario de modificación.
+                };
+            },
+
+            methods: {
+                //Se ejecuta cuando se envía el formulario de consulta. En este método, utilizamos fetch para realizar una solicitud GET a la API y obtener los datos de la empresa correspondiente al codigo ingresado.
+                obtenerEmpresa() {
+                    fetch(URL + 'empresas/' + this.codigo)
+                        //Realiza una solicitud de red al servidor para obtener los datos de la empresa. Usa la URL definida anteriormente y añade 'empresas/' seguido del codigo.
+
+                        //Verificamos si la respuesta de la solicitud es exitosa (código de respuesta 200-299). 
+                        .then(response => {
+                            //Si es así, utilizamos response.json() para parsear la respuesta en formato JSON.
+                            if (response.ok) {
+                                return response.json() //Una vez que la respuesta llega del servidor, se convierte de formato JSON a un objeto JavaScript.
+                            } else {
+                                //Si la respuesta es un error, lanzamos una excepción para ser "catcheada" más adelante en el catch.
+                                throw new Error('ERROR al obtener los datos de la empresa')
+                            }
+                        })
+
+                        //En este bloque, se asignan los datos obtenidos a las variables correspondientes de la aplicación Vue.
+                        .then(data => {
+                            this.nombre = data.nombre;
+                            this.rubro = data.rubro;
+                            this.direccion = data.direccion;
+                            this.mail = data.mail;
+                            this.mostrarDatosEmpresa = true;
+                        })
+
+                        //Si ocurre un error durante la solicitud, se captura y se imprime en la consola.
+                        .catch(error => {
+                            alert('empresa NO ENCONTRADA!!')
+                        })
+                },
+
+                //Se usa para enviar los datos modificados del producto al servidor.
+                guardarCambios() {
+                    const formData = new FormData();
+                    formData.append('codigo', this.codigo);
+                    formData.append('nombre', this.nombre);
+                    formData.append('rubro', this.rubro);
+                    formData.append('direccion', this.direccion);
+                    formData.append('mail', this.mail);
+
+                    //Utilizamos fetch para realizar una solicitud PUT a la API y guardar los cambios.
+                    fetch(URL + 'empresas/' + this.codigo, {
+                        method: 'PUT',
+                        body: formData, //Dado que formData puede contener archivos, no se utiliza JSON.
+                    })
+                        .then(response => {
+                            //Si la respuesta es exitosa, utilizamos response.json() para parsear la respuesta en formato JSON.
+                            if (response.ok) {
+                                return response.json()
+                            } else {
+                                //Si la respuesta es un error, lanzamos una excepción.
+                                throw new Error('ERROR 01 al guardar los cambios de la empresa')
+                            }
+                        })
+
+                        //Respuesta OK, muestra una alerta informando que la empresa se agregó correctamente y limpia los campos del formulario para que puedan ser utilizados para una nueva empresa
+                        .then(data => {
+                            alert('Empresa ACTUALIZADA CORRECTAMENTE!!');
+                            this.limpiarFormulario();
+                        })
+
+                        // En caso de error, mostramos una alerta con un mensaje de error.
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('ERROR 02 al actualizar la empresa!!');
+                        });
+                },
+
+                //Restablece todas las variables relacionadas con el formulario a sus valores iniciales, lo que efectivamente "limpia" el formulario.
+                limpiarFormulario() {
+                    this.codigo = '';
+                    this.nombre = '';
+                    this.rubro = '';
+                    this.direccion = '';
+                    this.mail = '';
+                    this.mostrarDatosEmpresa = false;
+                }
+            }
+        });
+
+        //Cuando se llama a app.mount('#app'), Vue busca en el documento HTML un elemento con el id app. Vue entonces toma el control de este elemento y de todo su contenido. Esto significa que Vue puede reaccionar a los cambios en sus datos y actualizar automáticamente el HTML en este elemento. También maneja eventos, como clicks o entradas de formulario, y actualiza los datos según las interacciones del usuario.
+
+        app.mount('#app');
+    </script>
+
+</body>
+
+</html>

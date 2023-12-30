@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica CodoaCodo</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos_crud.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <header class="header">
+            <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+            <input type="checkbox" id="check">
+            <label for="check" class="mostrar-menu">&#8801</label>
+            <nav class="menu">
+                <a href="index.html">Inicio</a>
+                <label for="check" class="esconder-menu">
+                    &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+                </label>
+            </nav>
+        </header>
+        <main class="content">
+            <h2 class="titulo"><b><u>Clinica Codo a Codo</u></b></h2>
+            <h2 class="titulo">LOGIN de Usuarios</h2>
+            <div class="contenedor-centrado">
+
+                    <form id="formulario" enctype="multipart/form-data">
+                        <br>
+                        <label for="dni">DNI</label>
+                        <input type="text" id="dni" name="dni" required><br><br>
+
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required><br><br>
+
+                        <button class="boton_verde" type="submit">Acceder</button>
+                        <button class="boton_rojo"><a class="xx" href="index.html">Cancelar</a></button>
+                    </form>
+
+            </div>
+        </main>
+
+        <footer class="footer">
+            <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+            <a href="index.html">Inicio</a>
+        </footer>
+
+    </div>
+
+    <script>
+        const URL = "http://127.0.0.1:5000/"
+
+        //Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+        //const URL = "https://USUARIO.pythonanywhere.com/"
+
+
+        // Capturamos el evento de envío del formulario
+        document.getElementById('formulario').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evitamos que se envie el form 
+
+            var formData = new FormData();
+            formData.append('dni', document.getElementById('dni').value);
+            formData.append('password', document.getElementById('password').value);
+
+            // Realizamos la solicitud POST al servidor. El método POST se usa para enviar y crear nuevos datos en el servidor.
+            fetch(URL + 'cons_pass_usuarios', {
+                method: 'POST',
+                body: formData // Aquí enviamos formData. Dado que formData puede contener archivos, no se utiliza JSON.
+            })
+
+                //Después de realizar la solicitud POST, se utiliza el método then() para manejar la respuesta del servidor.
+                .then(function (response) {
+                    if (response.ok) {
+                        //Si la respuesta es exitosa, convierte los datos de la respuesta a formato JSON.
+                        alert('INGRESO AUTORIZADO!!');
+                        window.open("solo_empleados.html", "_self");
+                    } else {
+                        alert('CRDENCIALES NO VALIDAS!!');
+                    }
+                })
+
+                // Limpiar el formulario en ambos casos (éxito o error)
+                .finally(function () {
+                    document.getElementById('dni').value = "";
+                    document.getElementById('password').value = "";
+                });
+        })
+    </script>
+
+</body>
+
+</html>

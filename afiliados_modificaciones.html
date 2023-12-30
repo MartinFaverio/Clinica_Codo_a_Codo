@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica CodoaCodo</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos_crud.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+            <input type="checkbox" id="check">
+            <label for="check" class="mostrar-menu">&#8801</label>
+            <nav class="menu">
+                <a href="afiliados_crud_index.html">Inicio CRUD</a>
+                <a href="afiliados_listado.html"><button class="boton">Volver listado</button></a>
+                <label for="check" class="esconder-menu">
+                    &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+                </label>
+            </nav>
+        </header>
+
+        <main class="content">
+            <h2 class="titulo"><b><u>CRUD afiliados Clinica Codo a Codo</u></b></h2>
+            <h2 class="titulo">Modificar Afiliados del Padron</h2>
+            <br>
+
+            <!-- Contenedor principal que será controlado por Vue.js. Este contenedor tendrá dos formularios. -->
+            <div id="app">
+                <!-- Primer formulario: Selector de afiliado. LLama a la función obtenerAfiliado cuando se envíe el formulario -->
+                <form @submit.prevent="obtenerAfiliado">
+                    <label for="dni">D.N.I.:</label>
+                    <input type="text" v-model="dni" required><br>
+                    <button  class="boton_verde" type="submit">Modificar Afiliado</button>
+                    <button class="boton_rojo"><a class="xx" href="afiliados_crud_index.html">Cancelar</a></button>
+                </form>
+
+                <!-- Segundo formulario: se muestra solo si mostrarDatosAfiliado es verdadero. Llama a la función guardarCambios -->
+                <div v-if="mostrarDatosAfiliado">
+                    <h2>Datos del Afiliado</h2>
+                    <form @submit.prevent="guardarCambios">
+                        <label for="nombreModificar">Nombre:</label>
+                        <input type="text" id="nombreModificar" v-model="nombre" required><br>
+
+                        <label for="apellidoModificar">Apellido:</label>
+                        <input type="text" id="apellidoModificar" v-model="apellido" required><br>
+
+                        <label for="fecha_nacModificar">Fecha nacimiento:</label>
+                        <input type="date" id="fecha_nacModificar" v-model="fecha_nac" required><br>
+
+                        <label for="planModificar">Plan:</label>
+                        <select name="plan" id="planModificar" v-model="plan" required>
+                            <option value="vacio"></option>
+                            <option value="ORO">Plan oro</option>
+                            <option value="PLATA">Plan plata</option>
+                            <option value="BRONCE">Plan bronce</option>
+                            <option value="CHAPA">Plan chapa</option>
+                            <option value="LATA">Plan lata</option>
+                        </select><br><br>
+
+                        <!-- Imagen actual del producto -->
+                        <img v-if="foto && !imagenSeleccionada" :src="'./static/imagenes/' + foto"
+                            alt="Imagen del producto" style="max-width: 200px;">
+
+                        <!-- Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere -->
+                        <!-- <img v-if="imagen_url && !imagenSeleccionada" :src="'https://www.pythonanywhere.com/user/USUARIO/files/home/USUARIO/mysite/static/imagenes/' + imagen_url"
+                    alt="Imagen del producto" style="max-width: 200px;"> -->
+
+
+                        <!-- Vista previa de la nueva imagen seleccionada -->
+                        <img v-if="imagenSeleccionada" :src="imagenUrlTemp" alt="Vista previa de la nueva imagen"
+                            style="max-width: 200px;">
+
+                        <!-- Input para nueva imagen -->
+                        <label for="nuevaImagen">Nueva Imagen:</label>
+                        <input type="file" id="nuevaImagen" @change="seleccionarImagen"><br><br>
+                        
+                        <label for="prestadorModificar">Prestador:</label>
+                            <select name="prestador" id="prestadorModificar" v-model="prestador" required>
+                                <option value="vacio"></option>
+                                <option value="100">Clinica Codo a Codo</option>
+                                <option value="101">O.S.D.E.</option>
+                                <option value="102">Swiss Medical</option>
+                                <option value="103">Medicus</option>
+                                <option value="104">Galeno</option>
+                            </select>
+                        <br><br>
+
+                        <button class="boton_verde" type="submit">Guardar Cambios</button>
+                        <button class="boton_rojo"><a class="xx" href="afiliados_modificaciones.html">Cancelar</a></button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+            <a href="afiliados_crud_index.html">Inicio CRUD</a>
+        </footer>
+
+    </div>
+
+
+
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const URL = "http://127.0.0.1:5000/"
+
+        //Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+        //const URL = "https://USUARIO.pythonanywhere.com/"
+
+
+        //Vue.createApp para crear nuestra aplicación Vue.
+        const app = Vue.createApp({
+
+            //La función data devuelve un objeto que contiene las siguientes propiedades: 
+            data() {
+                return {
+                    dni: '',
+                    nombre: '',
+                    apellido: '',
+                    fecha_nac: '',
+                    plan: '',
+                    foto: '',
+                    prestador: '',
+                    imagenSeleccionada: null,
+                    imagenUrlTemp: null,
+                    mostrarDatosAfiliado: false, //mostrarDatosAfiliado para controlar la visibilidad del formulario de modificación.
+                };
+            },
+
+            methods: {
+                //Se ejecuta cuando se envía el formulario de consulta. En este método, utilizamos fetch para realizar una solicitud GET a la API y obtener los datos del afiliado correspondiente al DNI ingresado.
+                obtenerAfiliado() {
+                    fetch(URL + 'afiliados/' + this.dni)
+                        //Realiza una solicitud de red al servidor para obtener los datos del afiliado. Usa la URL definida anteriormente y añade 'afiliados/' seguido del DNI del afiliado.
+
+                        //Verificamos si la respuesta de la solicitud es exitosa (código de respuesta 200-299). 
+                        .then(response => {
+                            //Si es así, utilizamos response.json() para parsear la respuesta en formato JSON.
+                            if (response.ok) {
+                                return response.json() //Una vez que la respuesta llega del servidor, se convierte de formato JSON a un objeto JavaScript.
+                            } else {
+                                //Si la respuesta es un error, lanzamos una excepción para ser "catcheada" más adelante en el catch.
+                                throw new Error('ERROR al obtener los datos del afiliado!!')
+                            }
+                        })
+
+                        //En este bloque, se asignan los datos obtenidos a las variables correspondientes de la aplicación Vue.
+                        .then(data => {
+                            this.nombre = data.nombre;
+                            this.apellido = data.apellido;
+                            this.fecha_nac = data.fecha_nac;
+                            this.plan = data.plan;
+                            this.foto = data.foto;
+                            this.prestador = data.prestador;
+                            this.mostrarDatosAfiliado = true;
+                        })
+
+                        //Si ocurre un error durante la solicitud, se captura y se imprime en la consola.
+                        .catch(error => {
+                            alert('Afiliado NO ENCONTRADO!!')
+                        })
+                },
+
+                //Se activa cuando el usuario selecciona una imagen para cargar.
+                seleccionarImagen(event) {
+                    const file = event.target.files[0];
+                    this.imagenSeleccionada = file;
+                    this.imagenUrlTemp = URL.createObjectURL(file); // Crea una URL temporal para la vista previa
+                },
+
+                //Se usa para enviar los datos modificados del producto al servidor.
+                guardarCambios() {
+                    const formData = new FormData();
+                    formData.append('dni', this.dni);
+                    formData.append('nombre', this.nombre);
+                    formData.append('apellido', this.apellido);
+                    formData.append('fecha_nac', this.fecha_nac);
+                    formData.append('plan', this.plan);
+                    formData.append('prestador', this.prestador);
+
+                    //Si se ha seleccionado una imagen nueva, la añade al formData. 
+                    if (this.imagenSeleccionada) {
+                        formData.append('foto', this.imagenSeleccionada, this.imagenSeleccionada.name);
+                    }
+
+                    //Utilizamos fetch para realizar una solicitud PUT a la API y guardar los cambios.
+                    fetch(URL + 'afiliados/' + this.dni, {
+                        method: 'PUT',
+                        body: formData, //Dado que formData puede contener archivos, no se utiliza JSON.
+                    })
+                        .then(response => {
+                            //Si la respuesta es exitosa, utilizamos response.json() para parsear la respuesta en formato JSON.
+                            if (response.ok) {
+                                return response.json()
+                            } else {
+                                //Si la respuesta es un error, lanzamos una excepción.
+                                throw new Error('ERROR 01 al guardar los cambios del afiliado!!')
+                            }
+                        })
+
+                        //Respuesta OK, muestra una alerta informando que el producto se agregó correctamente y limpia los campos del formulario para que puedan ser utilizados para un nuevo producto.
+                        .then(data => {
+                            alert('Afiliado ACTUALIZADO CORRECTAMENTE!!');
+                            this.limpiarFormulario();
+                        })
+
+                        // En caso de error, mostramos una alerta con un mensaje de error.
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('ERROR 02 al actualizar el afiliado!!');
+                        });
+                },
+
+                //Restablece todas las variables relacionadas con el formulario a sus valores iniciales, lo que efectivamente "limpia" el formulario.
+                limpiarFormulario() {
+                    this.dni = '';
+                    this.nombre = '';
+                    this.apellido = '';
+                    this.fecha_nac = '';
+                    this.plan = '';
+                    this.foto = '';
+                    this.prestador = '';
+                    this.imagenSeleccionada = null;
+                    this.imagenUrlTemp = null;
+                    this.mostrarDatosAfiliado = false;
+                }
+            }
+        });
+
+        //Cuando se llama a app.mount('#app'), Vue busca en el documento HTML un elemento con el id app. Vue entonces toma el control de este elemento y de todo su contenido. Esto significa que Vue puede reaccionar a los cambios en sus datos y actualizar automáticamente el HTML en este elemento. También maneja eventos, como clicks o entradas de formulario, y actualiza los datos según las interacciones del usuario.
+
+        app.mount('#app');
+    </script>
+
+</body>
+
+</html>

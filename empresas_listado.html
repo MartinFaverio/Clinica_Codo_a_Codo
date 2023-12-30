@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica CodoaCodo</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos_crud.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h2 class="logo"><a href="index.html"><img src="img/logo_nuevo2.png" alt=""></a></h2>
+            <input type="checkbox" id="check">
+            <label for="check" class="mostrar-menu">&#8801</label>
+            <nav class="menu">
+                <a href="empresas_crud_index .html">Inicio CRUD</a>
+                <label for="check" class="esconder-menu">
+                    &#215 <!--Este es el código ASCII correspondiente al icono menu hamburguesa -->
+                </label>
+            </nav>
+        </header>
+
+        <main class="content">
+            <a id="arriba"><h2 class="titulo"><b><u>CRUD empresas Clinica Codo a Codo</u></b></h2></a>
+            <h2 class="titulo">Listado general de empresas</h2>
+            <br>
+
+            <table width="100%"> <!-- Se crea una tabla para mostrar los afiliados. -->
+                <thead> <!--Encabezado de la tabla con columnas para todos los datos del los afiliados + acciones.-->
+                    <tr>
+                        <th><u>Codigo</u></th>
+                        <th><u>Nombre</u></th>
+                        <th><u>Rubro</u></th>
+                        <th><u>Direccion</u></th>
+                        <th><u>Mail de contacto</u></th>                    
+                    </tr>
+                </thead>
+
+                <tbody id="tablaempresas"> </tbody>
+            </table>
+
+            <div class="contenedor-centrado">
+                <a class="xx" href="#arriba">Ir al comienzo</a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <h4>CLINICA CODOACODO <span>Esperanza 114, Buenos Aires</span></h4>
+            <a href="solo_empleados.html">Inicio CRUD</a>
+        </footer>
+
+    </div>
+
+
+    <script>
+        const URL = "http://127.0.0.1:5000/"
+
+        // Al subir al servidor, deberá utilizarse la siguiente ruta. USUARIO debe ser reemplazado por el nombre de usuario de Pythonanywhere
+        //const URL = "https://USUARIO.pythonanywhere.com/"
+
+
+        // Realizamos la solicitud GET al servidor para obtener todos los productos.
+        fetch(URL + 'empresas')
+            .then(function (response) {
+                if (response.ok) {
+                    //Si la respuesta es exitosa (response.ok), convierte el cuerpo de la respuesta de formato JSON a un objeto JavaScript y pasa estos datos a la siguiente promesa then.
+                    return response.json();
+                } else {
+                    // Si hubo un error, lanzar explícitamente una excepción para ser "catcheada" más adelante
+                    throw new Error('ERROR al obtener el listado de empresas!!');
+                }
+            })
+
+            //Esta función maneja los datos convertidos del JSON.
+            .then(function (data) {
+                let tablaempresas = document.getElementById('tablaempresas'); //Selecciona el elemento del DOM donde se mostrarán los productos.
+
+                // Iteramos sobre cada producto y agregamos filas a la tabla
+                for (let empresa of data) {
+                    let fila = document.createElement('tr'); //Crea una nueva fila de tabla (<tr>) para cada producto.
+                    fila.innerHTML = '<td align="center">' + empresa.codigo + '</td>' +
+                        '<td align="center">' + empresa.nombre +  '</td>' +
+                        '<td align="center">' + empresa.rubro + '</td>' +
+                        '<td align="center">' + empresa.direccion + '</td>' +
+                        '<td align="center">' + empresa.mail + '</td>' +
+                        '<td align="center"><a href="empresas_modificaciones.html"><button class="boton">Modificar</button></a></td>';
+
+                    //Una vez que se crea la fila con el contenido del producto, se agrega a la tabla utilizando el método appendChild del elemento tablaProductos.
+                    tablaempresas.appendChild(fila);
+                }
+            })
+
+            //Captura y maneja errores, mostrando una alerta en caso de error al obtener los productos.
+            .catch(function (error) {
+                // Código para manejar errores
+                alert('ERROR al obtener las empresas!!');
+            });
+    </script>
+</body>
+
+</html>
